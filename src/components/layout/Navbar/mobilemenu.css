@@ -896,3 +896,29 @@
   }
 
 }
+
+
+.mobilemenu__chevron {
+  transition: transform 0.3s ease;
+}
+
+.mobilemenu__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.mobilemenu__item.is-open .mobilemenu__plus {
+  color: #04140b;
+  background: #4ade80;
+  border-color: #4ade80;
+}
+
+.mobilemenu__item.is-open .mobilemenu__chevron {
+  color: #04140b;
+}
+
+.mobilemenu__item:focus-visible,
+.mobilemenu__chip:focus-visible,
+.navbar__link:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 4px;
+}

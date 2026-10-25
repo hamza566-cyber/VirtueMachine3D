@@ -3,15 +3,11 @@ import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Button from "../../../components/ui/Button.jsx";
 
-import rapidPrototypingImage from "../../../assets/images/Services/Icons/rapidPrototyping.webp";
 import productionPartsImage from "../../../assets/images/Services/Icons/productionParts.webp";
-import customPrintingImage from "../../../assets/images/Services/Icons/customPrinting.webp";
-import scanningImage from "../../../assets/images/Services/Icons/scanning.webp";
-import functionalPrototypesImage from "../../../assets/images/Services/Icons/functionalPrototypes.webp";
-import engineeringPartsImage from "../../../assets/images/Services/Icons/Engineering-Parts.webp";
-import materialsExpertiseImage from "../../../assets/images/Services/Icons/materialsExpertise.webp";
-import smallBatchManufacturingImage from "../../../assets/images/Services/Icons/Small-Batch-Manufacturing.webp";
-import cncPartsProcurementImage from "../../../assets/images/Services/Icons/cncpartsprocurement.webp";
+import cncMilling from "../../../assets/images/Services/Icons/CNC Precision Milling.webp";
+import cncTurning from "../../../assets/images/Services/Icons/CNC Precision Turning.webp";
+import cncSlidingHeadTurning from "../../../assets/images/Services/Icons/CNC Sliding Head Turning.webp";
+import cncPartsProcurement from "../../../assets/images/Services/Icons/cncpartsprocurement.webp";
 
 const item = {
   hidden: {
@@ -46,29 +42,49 @@ const maskReveal = {
 };
 
 const SERVICE_IMAGES = {
-  "rapid-prototyping": rapidPrototypingImage,
   "industrial-3d-printing": productionPartsImage,
-  "custom-3d-printing": customPrintingImage,
-  "product-development": scanningImage,
-  "functional-prototypes": functionalPrototypesImage,
-  "engineering-parts": engineeringPartsImage,
-  "replacement-parts": materialsExpertiseImage,
-  "small-batch-manufacturing": smallBatchManufacturingImage,
-  "cnc-procurement": cncPartsProcurementImage,
+  "cnc-machines": productionPartsImage,
+  "cnc-precision-turning": cncTurning,
+  "cnc-precision-milling": cncMilling,
+  "cnc-sliding-head-turning": cncSlidingHeadTurning,
+  procurement: cncPartsProcurement,
+  "cnc-procurement": cncPartsProcurement,
+  "cnc-parts-procurement": cncPartsProcurement,
 };
 
 const DEFAULT_IMAGE = productionPartsImage;
 
 const DEFAULT_HIGHLIGHTS = [
-  "Advanced Print Technologies",
+  "Advanced Manufacturing Technologies",
   "Engineering-Grade Materials",
-  "Complex Part Manufacturing",
+  "Precision Component Manufacturing",
 ];
+
+const normalizeServiceId = (value = "") =>
+  String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
 export default function ServiceDetailHero({ service }) {
   const shouldReduceMotion = useReducedMotion();
 
   if (!service) return null;
+
+  const serviceId = normalizeServiceId(service.id);
+  const titleId = normalizeServiceId(service.title);
+
+  const resolvedServiceId = SERVICE_IMAGES[serviceId]
+    ? serviceId
+    : SERVICE_IMAGES[titleId]
+      ? titleId
+      : serviceId;
+
+  const isProcurement =
+    resolvedServiceId.includes("procurement") ||
+    titleId.includes("procurement");
 
   const headline =
     service.hero?.headline ||
@@ -94,12 +110,13 @@ export default function ServiceDetailHero({ service }) {
     href: "#process",
   };
 
-  const imageSrc =
-    service.heroImage ||
-    service.image ||
-    service.imageUrl ||
-    SERVICE_IMAGES[service.id] ||
-    DEFAULT_IMAGE;
+  const imageSrc = isProcurement
+    ? cncPartsProcurement
+    : SERVICE_IMAGES[resolvedServiceId] ||
+      service.heroImage ||
+      service.image ||
+      service.imageUrl ||
+      DEFAULT_IMAGE;
 
   const highlights = (
     service.heroHighlights?.length
@@ -116,7 +133,9 @@ export default function ServiceDetailHero({ service }) {
     if (event.currentTarget.dataset.fallbackApplied === "true") return;
 
     event.currentTarget.dataset.fallbackApplied = "true";
-    event.currentTarget.src = DEFAULT_IMAGE;
+    event.currentTarget.src = isProcurement
+      ? cncPartsProcurement
+      : DEFAULT_IMAGE;
   };
 
   const animationProps = shouldReduceMotion
@@ -131,15 +150,12 @@ export default function ServiceDetailHero({ service }) {
       data-hero-section
       className="relative isolate overflow-hidden border-b border-white/10 bg-[#080A08] pt-24 text-[#F5F7F4] sm:pt-28 lg:pt-32"
     >
-      {/* Background Glow */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-0 -z-10 h-64 w-full max-w-7xl -translate-x-1/2 bg-[#16C868]/5 blur-[100px] sm:h-80 sm:blur-[120px]"
       />
 
-      {/* Main Responsive Layout */}
       <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-4 pb-12 sm:gap-10 sm:px-6 sm:pb-16 md:pb-20 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:pb-24 xl:px-6">
-        {/* IMAGE — Mobile: After Content | Desktop: Left */}
         <motion.div
           variants={shouldReduceMotion ? undefined : maskReveal}
           initial={shouldReduceMotion ? false : "hidden"}
@@ -157,13 +173,11 @@ export default function ServiceDetailHero({ service }) {
               className="h-full w-full object-cover object-center brightness-95 contrast-105 transition-transform duration-700 ease-out group-hover:scale-[1.04]"
             />
 
-            {/* Image Overlay */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080A08]/45 via-transparent to-transparent"
             />
 
-            {/* Green Accent */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute bottom-0 left-0 h-1 w-1/3 bg-[#16C868]"
@@ -171,9 +185,7 @@ export default function ServiceDetailHero({ service }) {
           </div>
         </motion.div>
 
-        {/* CONTENT — Mobile: First | Desktop: Right */}
         <div className="order-1 flex min-w-0 flex-col justify-center lg:order-2 lg:col-span-7">
-          {/* Breadcrumb */}
           <motion.nav
             aria-label="Breadcrumb"
             variants={item}
@@ -198,7 +210,6 @@ export default function ServiceDetailHero({ service }) {
             </span>
           </motion.nav>
 
-          {/* Heading */}
           <motion.h1
             variants={item}
             {...animationProps}
@@ -208,7 +219,6 @@ export default function ServiceDetailHero({ service }) {
             {headline}
           </motion.h1>
 
-          {/* Description */}
           <motion.p
             variants={item}
             {...animationProps}
@@ -218,14 +228,12 @@ export default function ServiceDetailHero({ service }) {
             {subtitle}
           </motion.p>
 
-          {/* CTA Buttons */}
           <motion.div
             variants={item}
             {...animationProps}
             custom={3}
             className="service-hero__actions mb-0 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center"
           >
-            {/* Primary CTA */}
             <Button
               to={primaryCta.href || "/contact"}
               size="sm"
@@ -234,7 +242,6 @@ export default function ServiceDetailHero({ service }) {
               <span>{primaryCta.label || "Get a Quote"}</span>
             </Button>
 
-            {/* Secondary CTA */}
             <a
               href={secondaryCta.href || "#process"}
               className="service-hero__secondary-cta inline-flex min-h-11 w-full items-center justify-center gap-2 border border-white/20 px-5 py-3 text-center text-sm font-medium text-white transition-colors duration-300 hover:border-[#16C868] hover:text-[#16C868] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#16C868] sm:w-auto"
@@ -245,8 +252,6 @@ export default function ServiceDetailHero({ service }) {
         </div>
       </div>
 
-      {/* RESPONSIVE-ONLY HIGHLIGHTS
-          Visible on mobile and tablet; hidden on desktop */}
       <div className="relative mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 sm:pb-16 lg:hidden">
         <motion.div
           initial={shouldReduceMotion ? false : "hidden"}

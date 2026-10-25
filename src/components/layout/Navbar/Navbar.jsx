@@ -1,8 +1,6 @@
+
 import { useEffect, useState } from "react";
-import {
-  NavLink,
-  useLocation,
-} from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   ChevronDown,
   Search as SearchIcon,
@@ -16,6 +14,7 @@ import {
 } from "../../../data/navigation.js";
 import { useScrolled } from "../../../hooks/useScrolled.js";
 import PagesDropdown from "./PagesDropdown.jsx";
+import ServicesDropdown from "./ServicesDropdown.jsx";
 import MobileMenu from "./MobileMenu.jsx";
 import SearchComponent from "./Search.jsx";
 import "./navbar.css";
@@ -26,13 +25,17 @@ export default function Navbar() {
   const location = useLocation();
 
   const [pagesOpen, setPagesOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobilePagesOpen, setMobilePagesOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     setPagesOpen(false);
+    setServicesOpen(false);
     setMobilePagesOpen(false);
+    setMobileServicesOpen(false);
     setSearchOpen(false);
     setMobileOpen(false);
   }, [location.pathname, location.hash]);
@@ -50,13 +53,21 @@ export default function Navbar() {
       if (window.innerWidth > 1100) {
         setMobileOpen(false);
         setMobilePagesOpen(false);
+        setMobileServicesOpen(false);
+      } else {
+        setPagesOpen(false);
+        setServicesOpen(false);
       }
     };
 
     const handleEscape = (event) => {
       if (event.key === "Escape") {
+        setPagesOpen(false);
+        setServicesOpen(false);
         setMobileOpen(false);
         setMobilePagesOpen(false);
+        setMobileServicesOpen(false);
+        setSearchOpen(false);
       }
     };
 
@@ -71,12 +82,16 @@ export default function Navbar() {
 
   const pagesIsActive = PAGES_DROPDOWN.some((item) => {
     const base = item.to.split("#")[0];
-
     return location.pathname === base && base !== "/";
   });
 
+  const servicesIsActive =
+    location.pathname === "/services" ||
+    location.pathname.startsWith("/services/");
+
   const handleMobileOpen = () => {
     setPagesOpen(false);
+    setServicesOpen(false);
     setSearchOpen(false);
     setMobileOpen(true);
   };
@@ -84,6 +99,26 @@ export default function Navbar() {
   const handleMobileClose = () => {
     setMobileOpen(false);
     setMobilePagesOpen(false);
+    setMobileServicesOpen(false);
+  };
+
+  const handlePagesEnter = () => {
+    if (window.innerWidth > 1100) {
+      setServicesOpen(false);
+      setPagesOpen(true);
+    }
+  };
+
+  const handleServicesEnter = () => {
+    if (window.innerWidth > 1100) {
+      setPagesOpen(false);
+      setServicesOpen(true);
+    }
+  };
+
+  const handleDropdownLeave = () => {
+    setPagesOpen(false);
+    setServicesOpen(false);
   };
 
   return (
@@ -101,20 +136,77 @@ export default function Navbar() {
           <nav className="navbar__nav" aria-label="Primary">
             <ul>
               {NAV_LINKS.map((link) => (
-                <li key={link.to}>
-                  <NavLink
-                    to={link.to}
-                    end={link.to === "/"}
-                    className={({ isActive }) =>
-                      `navbar__link ${isActive ? "is-active" : ""}`
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
+                <li
+                  key={link.to}
+                  className={
+                    link.label === "Services"
+                      ? `navbar__services ${
+                          servicesOpen ? "is-open" : ""
+                        }`
+                      : ""
+                  }
+                  onMouseEnter={
+                    link.label === "Services"
+                      ? handleServicesEnter
+                      : undefined
+                  }
+                  onMouseLeave={
+                    link.label === "Services"
+                      ? handleDropdownLeave
+                      : undefined
+                  }
+                >
+                  {link.label === "Services" ? (
+                    <>
+                      <button
+                        type="button"
+                        className={`navbar__link navbar__link--btn ${
+                          servicesIsActive ? "is-active" : ""
+                        } ${servicesOpen ? "is-open" : ""}`}
+                        aria-expanded={servicesOpen}
+                        aria-haspopup="true"
+                        onFocus={handleServicesEnter}
+                        onClick={() => {
+                          if (window.innerWidth <= 1100) {
+                            setServicesOpen((value) => !value);
+                          }
+                        }}
+                      >
+                        Services
+                        <ChevronDown
+                          size={14}
+                          className="navbar__chevron"
+                        />
+                      </button>
+
+                      <ServicesDropdown
+                        open={servicesOpen}
+                        onClose={() => setServicesOpen(false)}
+                      />
+                    </>
+                  ) : (
+                    <NavLink
+                      to={link.to}
+                      end={link.to === "/"}
+                      className={({ isActive }) =>
+                        `navbar__link ${
+                          isActive ? "is-active" : ""
+                        }`
+                      }
+                    >
+                      {link.label}
+                    </NavLink>
+                  )}
                 </li>
               ))}
 
-              <li className="navbar__pages">
+              <li
+                className={`navbar__pages ${
+                  pagesOpen ? "is-open" : ""
+                }`}
+                onMouseEnter={handlePagesEnter}
+                onMouseLeave={handleDropdownLeave}
+              >
                 <button
                   type="button"
                   className={`navbar__link navbar__link--btn ${
@@ -122,7 +214,12 @@ export default function Navbar() {
                   } ${pagesOpen ? "is-open" : ""}`}
                   aria-expanded={pagesOpen}
                   aria-haspopup="true"
-                  onClick={() => setPagesOpen((value) => !value)}
+                  onFocus={handlePagesEnter}
+                  onClick={() => {
+                    if (window.innerWidth <= 1100) {
+                      setPagesOpen((value) => !value);
+                    }
+                  }}
                 >
                   Pages
                   <ChevronDown
@@ -141,7 +238,9 @@ export default function Navbar() {
                 <NavLink
                   to="/contact"
                   className={({ isActive }) =>
-                    `navbar__link ${isActive ? "is-active" : ""}`
+                    `navbar__link ${
+                      isActive ? "is-active" : ""
+                    }`
                   }
                 >
                   Contact
@@ -159,6 +258,7 @@ export default function Navbar() {
                 aria-expanded={searchOpen}
                 onClick={() => {
                   setPagesOpen(false);
+                  setServicesOpen(false);
                   setSearchOpen((value) => !value);
                 }}
               >
@@ -212,6 +312,10 @@ export default function Navbar() {
         pagesOpen={mobilePagesOpen}
         onTogglePages={() =>
           setMobilePagesOpen((value) => !value)
+        }
+        servicesOpen={mobileServicesOpen}
+        onToggleServices={() =>
+          setMobileServicesOpen((value) => !value)
         }
       />
     </>

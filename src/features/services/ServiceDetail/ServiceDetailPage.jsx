@@ -50,22 +50,22 @@ html {
 }
 `;
 
-export default function ServiceDetailPage() {
+export default function ServiceDetailPage({ serviceId: forcedServiceId }) {
   const { id } = useParams();
 
-  const detailService = servicesDetails[id];
-  const listService = SERVICES.find((item) => item.id === id);
+  const serviceId = forcedServiceId || id;
+
+  const detailService = servicesDetails[serviceId];
+
+  const listService = SERVICES.find(
+    (item) => item.id === serviceId
+  );
 
   const service = detailService
     ? {
         ...detailService,
-        ...(listService
-          ? {
-              id: listService.id,
-              title: listService.title,
-              process: listService.process,
-            }
-          : {}),
+        id: serviceId,
+        title: listService?.title || detailService.title,
       }
     : null;
 
@@ -98,7 +98,10 @@ export default function ServiceDetailPage() {
     <MotionConfig reducedMotion="user">
       <style>{fontCss}</style>
 
-      <main className="vm-service w-full overflow-x-hidden" style={theme}>
+      <main
+        className="vm-service w-full overflow-x-hidden"
+        style={theme}
+      >
         <div className="relative">
           <ServiceDetailHero service={service} />
         </div>
@@ -106,9 +109,10 @@ export default function ServiceDetailPage() {
         <ServiceOverview service={service} />
         <ServiceProcess service={service} />
         <ServiceFAQs service={service} />
+
         <div className="mb-16">
           <CTA />
-          </div>
+        </div>
       </main>
     </MotionConfig>
   );

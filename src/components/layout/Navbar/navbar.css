@@ -1,5 +1,5 @@
 /* ==========================================================
-   NAVBAR — white angled logo plate + green → black gradient
+   NAVBAR — white angled logo plate + green to black gradient
    ========================================================== */
 
 .navbar {
@@ -43,6 +43,7 @@
 }
 
 /* Inner row */
+
 .navbar__inner {
   position: relative;
   min-height: 82px;
@@ -54,6 +55,7 @@
 }
 
 /* Logo plate */
+
 .navbar__plate {
   display: flex;
   align-items: center;
@@ -92,7 +94,8 @@
   height: 65px;
 }
 
-/* Desktop nav */
+/* Desktop navigation */
+
 .navbar__nav {
   display: flex;
   align-items: center;
@@ -109,7 +112,8 @@
 }
 
 .navbar__nav li,
-.navbar__pages {
+.navbar__pages,
+.navbar__services {
   position: relative;
 }
 
@@ -162,6 +166,7 @@
 }
 
 .navbar__chevron {
+  flex-shrink: 0;
   transition: transform 0.25s ease;
 }
 
@@ -170,6 +175,7 @@
 }
 
 /* Right side */
+
 .navbar__right {
   display: flex;
   align-items: center;
@@ -363,9 +369,7 @@
   align-self: center;
 }
 
-/* ==========================================================
-   ANIMATED HAMBURGER (tablet + mobile only)
-   ========================================================== */
+/* Animated hamburger */
 
 .navbar__burger {
   display: none;
@@ -440,12 +444,14 @@
   width: 22px;
 }
 
-/* open → X */
+/* Open hamburger becomes X */
+
 .navbar__burger.is-open {
   color: #04140b;
   border-color: #4ADE80;
   background: #4ADE80;
-  box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.18),
+  box-shadow:
+    0 0 0 6px rgba(74, 222, 128, 0.18),
     0 0 28px rgba(74, 222, 128, 0.55);
 }
 
@@ -471,14 +477,41 @@
 }
 
 /* ==========================================================
-   RESPONSIVE NAVBAR
-   DESKTOP LAYOUT — UNCHANGED
-   Tablet & Mobile — logo right, smaller white plate,
-   reduced navbar height
+   DESKTOP DROPDOWN HOVER SUPPORT
    ========================================================== */
 
+@media (min-width: 1101px) {
+  .navbar__pages,
+  .navbar__services {
+    position: relative;
+  }
 
-/* SMALL DESKTOP — KEEP EXISTING DESIGN */
+  .navbar__pages::after,
+  .navbar__services::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    height: 12px;
+    pointer-events: auto;
+  }
+
+  .navbar__pages::after {
+    left: -50px;
+    right: -50px;
+  }
+
+  .navbar__services::after {
+    left: -15px;
+    right: -115px;
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE NAVBAR
+   ========================================================== */
+
+/* Small desktop */
+
 @media (max-width: 1180px) {
   .navbar__inner {
     gap: 20px;
@@ -500,8 +533,8 @@
   }
 }
 
+/* Tablet */
 
-/* TABLET */
 @media (max-width: 1100px) {
   .navbar {
     --plate-w: 250px;
@@ -549,7 +582,8 @@
   }
 }
 
-/* LARGE PHONE */
+/* Large phone */
+
 @media (max-width: 768px) {
   .navbar {
     --plate-w: 235px;
@@ -591,7 +625,8 @@
   }
 }
 
-/* PHONE */
+/* Phone */
+
 @media (max-width: 560px) {
   .navbar {
     --plate-w: 215px;
@@ -610,7 +645,8 @@
   }
 }
 
-/* SMALL PHONE */
+/* Small phone */
+
 @media (max-width: 480px) {
   .navbar {
     --plate-w: 202px;
@@ -650,7 +686,8 @@
   }
 }
 
-/* EXTRA SMALL PHONE */
+/* Extra small phone */
+
 @media (max-width: 360px) {
   .navbar {
     --plate-w: 182px;
@@ -680,10 +717,24 @@
   }
 }
 
+/* Hide mobile menu on desktop */
 
-/* HIDE MOBILE MENU ON DESKTOP */
 @media (min-width: 1101px) {
   .mobilemenu {
     display: none !important;
+  }
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .navbar *,
+  .navbar *::before,
+  .navbar *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
