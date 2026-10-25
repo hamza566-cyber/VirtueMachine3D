@@ -1,3 +1,4 @@
+
 export const NAV_LINKS = [
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
@@ -9,3 +10,26 @@ export const PAGES_DROPDOWN = [
   { label: "FAQ", to: "/faq" },
   { label: "Blog", to: "/blog" },
 ];
+
+export const SERVICES_DROPDOWN = [
+  { label: "3D Printing", to: "/services/3d-printing" },
+  { label: "CNC Machines", to: "/services/cnc-machines" },
+  { label: "Procurement", to: "/services/procurement" },
+];
+
+const serviceCategories = [
+  {
+    label: "3D Printing Services",
+    to: "/services/3d-printing",
+  },
+  {
+    label: "CNC Machines",
+    to: "/services/cnc-machines",
+  },
+  {
+    label: "Procurement",
+    to: "/services/procurement",
+  },
+];
+
+export default serviceCategories;

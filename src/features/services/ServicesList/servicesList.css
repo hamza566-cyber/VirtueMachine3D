@@ -421,3 +421,12 @@
     transition: none;
   }
 }
+
+
+.services-list__empty {
+  padding: 35px 0;
+  color: #66737d;
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: center;
+}

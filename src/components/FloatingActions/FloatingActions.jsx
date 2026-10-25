@@ -68,7 +68,7 @@ const ACTIONS = [
     key: "whatsapp",
     label: "WhatsApp",
     icon: <WhatsAppIcon />,
-    detail: "+1 (512) 555-0142",
+    detail: "000000000",
   },
   {
     key: "location",

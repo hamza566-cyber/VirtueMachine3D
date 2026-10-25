@@ -1,4 +1,4 @@
-import React from "react";
+
 import { motion, useReducedMotion } from "framer-motion";
 import {
   FileText,
@@ -20,6 +20,11 @@ import {
   Truck,
   Factory,
   Cog,
+  Search,
+  ClipboardList,
+  Handshake,
+  ShoppingCart,
+  CheckCircle2,
 } from "lucide-react";
 import { fadeUp, stagger, viewOnce } from "./Motionpresets.js";
 
@@ -97,7 +102,23 @@ const serviceStepIcons = {
     ClipboardCheck,
     Truck,
   ],
+  procurement: [
+    FileText,
+    ClipboardList,
+    Search,
+    Calculator,
+    CheckCircle2,
+    Truck,
+  ],
   "cnc-procurement": [
+    FileText,
+    Calculator,
+    Layers,
+    Settings2,
+    Ruler,
+    Globe,
+  ],
+  "cnc-parts-procurement": [
     FileText,
     Calculator,
     Layers,
@@ -140,15 +161,30 @@ const sparklePositions = [
 export default function ServiceProcess({ service }) {
   const shouldReduceMotion = useReducedMotion();
 
-  const serviceSteps = service?.process?.steps;
+  const rawProcess = service?.process;
+
+  const serviceSteps = Array.isArray(rawProcess)
+    ? rawProcess
+    : Array.isArray(rawProcess?.steps)
+      ? rawProcess.steps
+      : [];
 
   const steps =
-    Array.isArray(serviceSteps) && serviceSteps.length > 0
+    serviceSteps.length > 0
       ? serviceSteps.map((step, index) => ({
-          number: String(index + 1).padStart(2, "0"),
+          number:
+            typeof step === "object" && step.number
+              ? String(step.number)
+              : typeof step === "object" && step.step
+                ? String(step.step)
+                : String(index + 1).padStart(2, "0"),
           title: String(
-            typeof step === "string" ? step : step.title || "PROCESS STEP"
+            typeof step === "string"
+              ? step
+              : step.title || "PROCESS STEP"
           ).toUpperCase(),
+          description:
+            typeof step === "object" ? step.description || "" : "",
           icon:
             serviceStepIcons[service?.id]?.[index] ||
             defaultSteps[index % defaultSteps.length].icon,
@@ -157,12 +193,11 @@ export default function ServiceProcess({ service }) {
 
   const sectionTitle = service?.title
     ? `How Our ${service.title} Process Works`
-    : "How Our CNC Parts Procurement Process Works";
+    : "How Our Procurement Process Works";
 
   return (
     <section
       id="process"
-      // SECTION POSITION: Poore black Process section ko upar lane ke liye negative margin.
       className="relative isolate -mt-6 overflow-hidden border-t border-white/5 bg-[#080A08] py-16 text-[#F5F7F4] sm:-mt-8 sm:py-20"
     >
       <motion.div
@@ -355,6 +390,12 @@ export default function ServiceProcess({ service }) {
                   <h3 className="max-w-[140px] text-[10px] font-bold leading-5 tracking-[0.07em] text-white transition-colors duration-300 group-hover:text-[#16C868] sm:text-xs">
                     {step.title}
                   </h3>
+
+                  {step.description && (
+                    <p className="mt-2 max-w-[180px] text-xs leading-5 text-white/50">
+                      {step.description}
+                    </p>
+                  )}
 
                   <div className="mt-2.5 h-px w-6 bg-[#16C868]/40 transition-all duration-300 group-hover:w-9 group-hover:bg-[#16C868]" />
 

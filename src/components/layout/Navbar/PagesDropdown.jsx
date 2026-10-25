@@ -1,12 +1,19 @@
+
 import { useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 import { PAGES_DROPDOWN } from "../../../data/navigation.js";
 import "./PagesDropdown.css";
 
 export default function PagesDropdown({ open, onClose }) {
   const ref = useRef(null);
   const location = useLocation();
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -14,14 +21,14 @@ export default function PagesDropdown({ open, onClose }) {
         const pagesButton = event.target.closest(".navbar__pages");
 
         if (!pagesButton) {
-          onClose();
+          onCloseRef.current();
         }
       }
     };
 
     const handleEscape = (event) => {
       if (event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
       }
     };
 
@@ -32,10 +39,10 @@ export default function PagesDropdown({ open, onClose }) {
       document.removeEventListener("mousedown", handleOutsideClick);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [onClose]);
+  }, []);
 
   useEffect(() => {
-    onClose();
+    onCloseRef.current();
   }, [location.pathname]);
 
   return (
@@ -69,14 +76,22 @@ export default function PagesDropdown({ open, onClose }) {
               <NavLink
                 key={page.to}
                 to={page.to}
-                onClick={onClose}
+                onClick={() => onCloseRef.current()}
                 className={({ isActive }) =>
                   `pagesmenu__item ${
                     isActive ? "pagesmenu__item--active" : ""
                   }`
                 }
               >
-                {page.label}
+                <span className="pagesmenu__label">
+                  {page.label}
+                </span>
+
+                <ArrowUpRight
+                  className="pagesmenu__arrow"
+                  size={14}
+                  aria-hidden="true"
+                />
               </NavLink>
             ))}
           </div>

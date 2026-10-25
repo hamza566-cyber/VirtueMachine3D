@@ -1,72 +1,78 @@
 
 import { motion } from "framer-motion";
-import {
-  ArrowUpRight,
-  Box,
-  Factory,
-  Layers3,
-  ScanLine,
-  Wrench,
-} from "lucide-react";
+import { ArrowUpRight, Factory, Layers3, Wrench } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./servicesList.css";
 
-import rapidPrototyping from "../../../assets/images/Services/Icons/rapidPrototyping.webp";
-import customPrinting from "../../../assets/images/Services/Icons/customPrinting.webp";
 import productionParts from "../../../assets/images/Services/Icons/productionParts.webp";
-import engineeringparts from "../../../assets/images/Services/Icons/Engineering-Parts.webp";
-import scanning from "../../../assets/images/Services/Icons/scanning.webp";
-import functionalPrototypes from "../../../assets/images/Services/Icons/functionalPrototypes.webp";
-import materialsExpertise from "../../../assets/images/Services/Icons/materialsExpertise.webp";
-import smallbatchmanufacturing from "../../../assets/images/Services/Icons/Small-Batch-Manufacturing.webp";
-import cncpartsprocurement from "../../../assets/images/Services/Icons/cncpartsprocurement.webp";
+import cncMilling from "../../../assets/images/Services/Icons/CNC Precision Milling.webp";
+import cncTurning from "../../../assets/images/Services/Icons/CNC Precision Turning.webp";
+import cncSlidingHeadTurning from "../../../assets/images/Services/Icons/CNC Sliding Head Turning.webp";
+import cncPartsProcurement from "../../../assets/images/Services/Icons/cncpartsprocurement.webp";
+
 import { SERVICES } from "../../../data/services/list.js";
 
 const serviceVisuals = {
-  "rapid-prototyping": {
-    image: rapidPrototyping,
-    icon: ScanLine,
-    tag: "Rapid Development",
-  },
   "industrial-3d-printing": {
     image: productionParts,
     icon: Factory,
-    tag: "Industrial Manufacturing",
+    tag: "Industrial 3D Printing",
+    category: "3d-printing",
   },
-  "custom-3d-printing": {
-    image: customPrinting,
-    icon: Box,
-    tag: "Additive Manufacturing",
-  },
-  "product-development": {
-    image: scanning,
-    icon: ScanLine,
-    tag: "Product Engineering",
-  },
-  "functional-prototypes": {
-    image: functionalPrototypes,
-    icon: Wrench,
-    tag: "Engineering",
-  },
-  "engineering-parts": {
-    image: engineeringparts,
+  "cnc-precision-turning": {
+    image: cncTurning,
     icon: Factory,
-    tag: "Precision Components",
+    tag: "CNC Precision Turning",
+    category: "cnc-machines",
   },
-  "replacement-parts": {
-    image: materialsExpertise,
+  "cnc-precision-milling": {
+    image: cncMilling,
+    icon: Wrench,
+    tag: "CNC Precision Milling",
+    category: "cnc-machines",
+  },
+  "cnc-sliding-head-turning": {
+    image: cncSlidingHeadTurning,
+    icon: Factory,
+    tag: "CNC Sliding Head Turning",
+    category: "cnc-machines",
+  },
+  procurement: {
+    image: cncPartsProcurement,
     icon: Layers3,
-    tag: "Replacement Components",
+    tag: "CNC Parts Procurement",
+    category: "procurement",
   },
-  "small-batch-manufacturing": {
-    image: smallbatchmanufacturing,
-    icon: Factory,
-    tag: "Production",
+};
+
+const categoryContent = {
+  all: {
+    eyebrow: "WHAT WE DO",
+    title: "Precision at",
+    highlight: "every stage.",
+    description:
+      "From the first idea to the final component, we combine advanced manufacturing with practical engineering to deliver parts built for purpose.",
   },
-  "cnc-procurement": {
-    image: cncpartsprocurement,
-    icon: Wrench,
-    tag: "CNC Manufacturing",
+  "3d-printing": {
+    eyebrow: "3D PRINTING SERVICES",
+    title: "Industrial",
+    highlight: "3D printing.",
+    description:
+      "Professional-grade 3D printing for precision components, industrial applications and demanding manufacturing requirements.",
+  },
+  "cnc-machines": {
+    eyebrow: "CNC MACHINING SERVICES",
+    title: "Precision CNC",
+    highlight: "solutions.",
+    description:
+      "Explore precision turning, milling and sliding head turning for accurate, dependable components.",
+  },
+  procurement: {
+    eyebrow: "PROCUREMENT SERVICES",
+    title: "CNC parts",
+    highlight: "procurement.",
+    description:
+      "Source precision CNC parts through specialized manufacturing partners, with coordinated quality checks and reliable delivery.",
   },
 };
 
@@ -110,8 +116,14 @@ const cardVariants = {
   }),
 };
 
-export default function ServicesList() {
-  const services = SERVICES;
+export default function ServicesList({ category = "all" }) {
+  const content = categoryContent[category] || categoryContent.all;
+
+  const services = SERVICES.filter((service) => {
+    const visual = serviceVisuals[service.id];
+
+    return visual && (category === "all" || visual.category === category);
+  });
 
   return (
     <section className="services-list">
@@ -130,27 +142,29 @@ export default function ServicesList() {
             variants={headingItem}
           >
             <span />
-            WHAT WE DO
+            {content.eyebrow}
           </motion.div>
 
           <div className="services-list__heading-row">
             <motion.h2 variants={headingItem}>
-              Precision at
-              <span>every stage.</span>
+              {content.title} <span>{content.highlight}</span>
             </motion.h2>
 
             <motion.p variants={headingItem}>
-              From the first idea to the final component, we combine
-              advanced manufacturing with practical engineering to
-              deliver parts built for purpose.
+              {content.description}
             </motion.p>
           </div>
         </motion.div>
 
         <div className="services-list__grid">
           {services.map((service, index) => {
-            const visual = serviceVisuals[service.id] || {};
-            const Icon = visual.icon || Box;
+            const visual = serviceVisuals[service.id];
+            const Icon = visual.icon;
+
+            const detailPath =
+              service.id === "procurement"
+                ? "/services/procurement/details"
+                : `/services/${service.id}`;
 
             return (
               <motion.article
@@ -164,10 +178,10 @@ export default function ServicesList() {
               >
                 <div className="service-card__image">
                   <img
-                    src={visual.image || productionParts}
-                    alt={service.title}
+                    src={visual.image}
+                    alt={visual.tag}
                     loading={index === 0 ? "eager" : "lazy"}
-                    fetchpriority={index === 0 ? "high" : "auto"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
                     decoding="async"
                   />
 
@@ -182,7 +196,7 @@ export default function ServicesList() {
                   </div>
 
                   <span className="service-card__tag">
-                    {visual.tag || "Manufacturing"}
+                    {visual.tag}
                   </span>
                 </div>
 
@@ -193,7 +207,7 @@ export default function ServicesList() {
                   </div>
 
                   <Link
-                    to={`/services/${service.id}`}
+                    to={detailPath}
                     className="service-card__link"
                     aria-label={`Learn more about ${service.title}`}
                   >
@@ -208,6 +222,12 @@ export default function ServicesList() {
             );
           })}
         </div>
+
+        {services.length === 0 && (
+          <p className="services-list__empty">
+            Services for this category will be available soon.
+          </p>
+        )}
       </div>
     </section>
   );
